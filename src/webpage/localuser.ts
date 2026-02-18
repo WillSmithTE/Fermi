@@ -21,7 +21,7 @@ import {
 } from "./jsontypes.js";
 import {Member} from "./member.js";
 import {Dialog, Form, FormError, Options, Settings} from "./settings.js";
-import {getTextNodeAtPosition, MarkDown, saveCaretPosition} from "./markdown.js";
+import {MarkDown, saveCaretPosition} from "./markdown.js";
 import {Bot} from "./bot.js";
 import {Role} from "./role.js";
 import {VoiceFactory, voiceStatusStr} from "./voice.js";
@@ -4031,28 +4031,14 @@ class Localuser {
 			span.append(name);
 			span.onclick = (e) => {
 				if (e) {
-					if (replace) {
-						const selection = window.getSelection() as Selection;
-						const box = typebox?.box.deref();
-						if (!box) return;
-						if (selection) {
-							const pos = getTextNodeAtPosition(
-								box,
-								original.length -
-									(original.match(this.autofillregex) as RegExpMatchArray)[0].length +
-									replace.length,
-							);
-							selection.removeAllRanges();
-							const range = new Range();
-							range.setStart(pos.node, pos.position);
-							selection.addRange(range);
-						}
-						box.focus();
-					}
 					e.preventDefault();
 				}
 				if (!func?.() && typebox) {
 					this.MDReplace(replace, original, typebox);
+				}
+				const box = typebox?.box.deref();
+				if (box) {
+					box.focus();
 				}
 				div.innerHTML = "";
 				remove();

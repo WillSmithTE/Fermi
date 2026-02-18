@@ -1116,6 +1116,26 @@ class MarkDown {
 		}
 		if (restore) {
 			restore(backspace);
+		} else if (computedLength !== undefined) {
+			const txtFunc = this.customBox
+				? this.customBox[1]
+				: MarkDown.gatherBoxText.bind(MarkDown);
+			const fullText = txtFunc(box);
+			const len = Math.min(computedLength + offset, fullText.length);
+			text = fullText.substring(0, len);
+			formatted = false;
+			const selection = window.getSelection();
+			if (selection) {
+				try {
+					const pos = getTextNodeAtPosition(box, len, txtFunc);
+					selection.removeAllRanges();
+					const range = new Range();
+					range.setStart(pos.node, Math.max(pos.position, 0));
+					selection.addRange(range);
+				} catch {
+					/* best-effort caret restore */
+				}
+			}
 		}
 		this.onUpdate(text, formatted);
 	}
@@ -1440,7 +1460,7 @@ function getTextNodeAtPosition(
 				}
 			}
 		} else {
-			const returny = getTextNodeAtPosition(node, index);
+			const returny = getTextNodeAtPosition(node, index, txtLengthFunc);
 			if (returny.position === -1) {
 				index = 0;
 				continue;
