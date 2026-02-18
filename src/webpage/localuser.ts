@@ -124,6 +124,8 @@ class Localuser {
 		sessionStorage.setItem("currentuser", specialUser.uid);
 		localStorage.setItem("userinfos", JSON.stringify(Localuser.users));
 
+		history.pushState(["@me"], "", "/channels/@me");
+
 		thisUser.initwebsocket().then(async () => {
 			const loaddesc = document.getElementById("load-desc") as HTMLElement;
 			thisUser.loaduser();
